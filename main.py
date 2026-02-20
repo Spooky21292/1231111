@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 async def set_bot_commands(application: Application) -> None:
     await application.bot.set_my_commands(
         [
+            BotCommand("start", "Показать справку"),
             BotCommand("weather", "Показать текущую погоду"),
             BotCommand("setcity", "Установить город: /setcity <город>"),
         ]
@@ -38,6 +39,19 @@ def resolve_scope(update: Update) -> tuple[str, int]:
         return "user", user.id
 
     return "chat", chat.id
+
+
+async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None:
+        return
+
+    text = (
+        "Привет! Я бот погоды.\n\n"
+        "Доступные команды:\n"
+        "• /setcity <город> — сохранить город\n"
+        "• /weather — показать текущую погоду"
+    )
+    await update.message.reply_text(text)
 
 
 async def setcity_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -111,6 +125,7 @@ def create_application(config: Config) -> Application:
     application.bot_data["openweather_api_key"] = config.openweather_api_key
     application.bot_data["default_city"] = config.default_city
 
+    application.add_handler(CommandHandler("start", start_handler))
     application.add_handler(CommandHandler("setcity", setcity_handler))
     application.add_handler(CommandHandler("weather", weather_handler))
 
@@ -121,7 +136,7 @@ def main() -> None:
     config = load_config()
     app = create_application(config)
     logger.info("Бот запущен")
-    app.run_polling(allowed_updates=Update.ALL_TYPES)
+    app.run_polling()
 
 
 if __name__ == "__main__":
