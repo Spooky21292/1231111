@@ -1,10 +1,16 @@
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent
+ENV_PATH = BASE_DIR / ".env"
+
+# Загружаем .env именно из директории проекта, чтобы запуск из IDE/другого CWD
+# работал предсказуемо на Windows/macOS/Linux.
+load_dotenv(dotenv_path=ENV_PATH)
 
 
 @dataclass(frozen=True)
@@ -20,9 +26,13 @@ def load_config() -> Config:
     default_city = os.getenv("DEFAULT_CITY", "").strip() or None
 
     if not token:
-        raise ValueError("TELEGRAM_BOT_TOKEN не задан в .env")
+        raise ValueError(
+            "TELEGRAM_BOT_TOKEN не задан. Скопируй .env.example в .env и укажи токен бота."
+        )
     if not weather_key:
-        raise ValueError("OPENWEATHER_API_KEY не задан в .env")
+        raise ValueError(
+            "OPENWEATHER_API_KEY не задан. Скопируй .env.example в .env и укажи API-ключ OpenWeather."
+        )
 
     return Config(
         telegram_bot_token=token,
