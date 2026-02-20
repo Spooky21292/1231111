@@ -4,7 +4,6 @@ from pathlib import Path
 
 DB_PATH = Path("database.sqlite3")
 
-
 CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS settings (
     key_type TEXT NOT NULL CHECK (key_type IN ('chat', 'user')),
@@ -43,7 +42,4 @@ def get_city(key_type: str, key_id: int) -> str | None:
             "SELECT city FROM settings WHERE key_type = ? AND key_id = ?",
             (key_type, key_id),
         ).fetchone()
-
-    if not row:
-        return None
-    return row[0]
+    return row[0] if row else None

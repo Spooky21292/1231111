@@ -7,13 +7,10 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
-
-# Загружаем .env именно из директории проекта, чтобы запуск из IDE/другого CWD
-# работал предсказуемо на Windows/macOS/Linux.
 load_dotenv(dotenv_path=ENV_PATH)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Config:
     telegram_bot_token: str
     openweather_api_key: str
@@ -27,11 +24,11 @@ def load_config() -> Config:
 
     if not token:
         raise ValueError(
-            "TELEGRAM_BOT_TOKEN не задан. Скопируй .env.example в .env и укажи токен бота."
+            "TELEGRAM_BOT_TOKEN не задан. Скопируй .env.example в .env и укажи токен."
         )
     if not weather_key:
         raise ValueError(
-            "OPENWEATHER_API_KEY не задан. Скопируй .env.example в .env и укажи API-ключ OpenWeather."
+            "OPENWEATHER_API_KEY не задан. Скопируй .env.example в .env и укажи API-ключ."
         )
 
     return Config(
